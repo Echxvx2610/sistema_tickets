@@ -1,0 +1,37 @@
+/* Estilos Generales - Base */
+html, body {
+    height: 100%; /* Garantiza que el cuerpo ocupe toda la altura de la ventana */
+    margin: 0; /* Elimina los márgenes predeterminados */
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    display: flex; /* Usamos flexbox para alinear el contenido */
+    flex-direction: column; /* Los elementos se apilan verticalmente */
+}
+
+body {
+    justify-content: flex-start; /* Alinea el contenido hacia el principio */
+}
+
+main {
+    flex-grow: 1; /* El main tomará el espacio disponible */
+    margin: 0px 5px;
+    padding: 10px;
+    border: 1px solid rgb(54, 156, 159);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-height: 80vh; /* Usa la altura mínima en unidades de vista (viewport) */
+}
+
+.header {
+    height: 10%;
+}
+
+.footer {
+    background-color: rgb(54, 156, 159);
+    height: 10%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    color: white;
+    font-weight: bold;
+}

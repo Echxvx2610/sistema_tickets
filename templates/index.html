@@ -1,0 +1,39 @@
+{% extends "base/layout.html" %}
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<!-- Estilos Locales -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<!-- Contenido de la página de Inicio -->
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>TITULO</th>
+            <th>DESCRIPCION</th>
+            <th>ESTADO</th>
+            <th>USUARIO</th>
+            <th>ACCIONES</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.id }}</td>
+            <td>{{ ticket.titulo }}</td>
+            <td>{{ ticket.descripcion }}</td>
+            <td>{{ ticket.estado }}</td>
+            <td>{{ ticket.usuario_id }}</td>
+            <td>
+                <a href="{{ url_for('update_ticket', ticket_id=ticket.id) }}">Editar</a>
+                <a href="{{ url_for('delete_ticket', ticket_id=ticket.id) }}">Eliminar</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="3">No hay tickets disponibles.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
