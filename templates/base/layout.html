@@ -10,34 +10,42 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header class="header">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Logo - name</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house"></i> Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('about') }}"><i class="bi bi-info-circle"></i> Users </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('contact') }}"> <i class="bi bi-telephone"></i> Tickets </a>
-                    </li>
-                </ul>
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('index') }}">Logo - name</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house-fill"></i> Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('usuarios') }}"><i class="bi bi-people-fill"></i> Users </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('tickets') }}"> <i class="bi bi-file-earmark-fill"></i> Tickets </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
-    <main>
-    {% block content %}
-    {% endblock %}
+
+    <main class="flex-grow-1">
+        <div class="container py-4">
+            {% block content %}
+            {% endblock %}
+        </div>
     </main>
-    <footer class="footer text-center mt-5">
-        <p>Copyright &copy; 2025 - Sistema Tickets - Echxvx2610</p>
+
+    <footer class="footer py-3 bg-dark mt-auto">
+        <div class="container">
+            <p class="text-center mb-0">Copyright &copy; 2025 - Sistema Tickets - Echxvx2610</p>
+        </div>
     </footer>
 
     <!-- Scripts Locales -->
@@ -46,3 +54,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
+

@@ -1,37 +1,151 @@
-/* Estilos Generales - Base */
-html, body {
-    height: 100%; /* Garantiza que el cuerpo ocupe toda la altura de la ventana */
-    margin: 0; /* Elimina los márgenes predeterminados */
-    font-family: Arial, sans-serif;
-    background-color: #f4f7fc;
-    display: flex; /* Usamos flexbox para alinear el contenido */
-    flex-direction: column; /* Los elementos se apilan verticalmente */
+/* Estilos base para el layout principal */
+
+/* Variables de color */
+:root {
+  --primary-bg: #f8f9fa;
+  --navbar-shadow: rgba(0, 0, 0, 0.1);
+  --content-shadow: rgba(0, 0, 0, 0.05);
+  --border-color: #dee2e6;
 }
 
+/* Estilos generales */
 body {
-    justify-content: flex-start; /* Alinea el contenido hacia el principio */
+  background-color: var(--primary-bg);
 }
 
+/* Estilos del navbar */
+.navbar {
+  box-shadow: 0 2px 4px var(--navbar-shadow);
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: cadetblue;
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: cadetblue;
+}
+
+.nav-link {
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: cadetblue;
+}
+
+.nav-link i {
+  margin-right: 5px;
+}
+
+/* Estilos del contenido principal */
 main {
-    flex-grow: 1; /* El main tomará el espacio disponible */
-    margin: 0px 5px;
-    padding: 10px;
-    border: 1px solid rgb(54, 156, 159);
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-height: 80vh; /* Usa la altura mínima en unidades de vista (viewport) */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px var(--content-shadow);
+  margin: 1rem 0;
 }
 
-.header {
-    height: 10%;
+main .container {
+  min-height: 70vh;
 }
 
+/* Estilos del footer */
 .footer {
-    background-color: rgb(54, 156, 159);
-    height: 10%;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    color: white;
-    font-weight: bold;
+  background-color: var(--primary-bg);
+  border-top: 1px solid var(--border-color);
 }
+
+.footer p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.5rem 0;
+  }
+
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+
+  main .container {
+    padding: 1rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main .container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para el estado activo de la navegación */
+.nav-link.active {
+  color: cadetblue;
+  border-bottom: 2px solid cadetblue;
+}
+
+/* Mejoras de accesibilidad */
+.nav-link:focus {
+  border-left: 5px solid cadetblue;
+}
+
+/* Estilos para el modo oscuro (si lo implementas después) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-bg: #1a1a1a;
+    --navbar-shadow: rgba(0, 0, 0, 0.2);
+    --content-shadow: rgba(0, 0, 0, 0.1);
+    --border-color: #333;
+  }
+
+  body {
+    color: #fff;
+  }
+
+  .navbar {
+    background-color: #222 !important;
+  }
+
+  .navbar-brand,
+  .nav-link {
+    color: #fff !important;
+  }
+
+  .nav-link:hover {
+    color: #007bff !important;
+  }
+
+  main {
+    background-color: #222;
+  }
+
+  .footer {
+    background-color: #222 !important;
+  }
+
+  .footer p {
+    color: #fff;
+  }
+}
+

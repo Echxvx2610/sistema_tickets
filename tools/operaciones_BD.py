@@ -68,7 +68,6 @@ def get_list_users():
 
     return users
 
-
 def get_list_tickets():
     conn = sqlite3.connect('tools/sistema_tickets.db')
     cursor = conn.cursor()
@@ -88,7 +87,6 @@ def get_list_tickets():
         tickets.append(ticket)
     
     return tickets
-
 
 # operaciones CRUD
 def register_user(username, password, role):
@@ -111,7 +109,15 @@ def delete_user(user_id):
     cursor.execute('DELETE FROM usuarios WHERE id = ?', (user_id,))
     conn.commit()
     conn.close()
-    
+
+def get_info_user(user_id):
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM usuarios WHERE id = ?', (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row
+
 def register_ticket(titulo, descripcion, estado, usuario_id):
     conn = sqlite3.connect('tools/sistema_tickets.db')
     cursor = conn.cursor()
@@ -132,5 +138,41 @@ def delete_ticket(ticket_id):
     cursor.execute('DELETE FROM tickets WHERE id = ?', (ticket_id,))
     conn.commit()
     conn.close()
-    
 
+def get_info_ticket(ticket_id):
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM tickets WHERE id = ?', (ticket_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row
+
+def get_element_by_id(table, id):
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+    cursor.execute(f'SELECT * FROM {table} WHERE id = ?', (id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row
+
+
+def get_username_by_ticket(user_id):
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+    
+    # Consulta para obtener el nombre del usuario por su ID
+    cursor.execute('''
+        SELECT username
+        FROM usuarios
+        WHERE id = ?
+    ''', (user_id,))
+    
+    # Obtener el resultado
+    user = cursor.fetchone()
+    
+    if user:
+        return user[0]  # Retorna el nombre de usuario
+    else:
+        return None  # No se encontró el usuario
+    
+    conn.close()

@@ -1,0 +1,27 @@
+{% extends "base/layout.html" %}
+
+{% block title %}Actualizar Ticket{% endblock %}
+
+{% block content %}
+<h2>Actualizar Ticket</h2>
+<!-- Formulario de actualización -->
+<form method="POST">
+    <label for="titulo">Título</label>
+    <input type="text" name="titulo" value="{{ ticket.titulo }}" required>
+    
+    <label for="descripcion">Descripción</label>
+    <textarea name="descripcion" required>{{ ticket.descripcion }}</textarea>
+    
+    <label for="estado">Estado</label>
+    <select name="estado" required>
+        <option value="abierto" {% if ticket.estado == 'abierto' %}selected{% endif %}>Abierto</option>
+        <option value="cerrado" {% if ticket.estado == 'cerrado' %}selected{% endif %}>Cerrado</option>
+    </select>
+    
+    <label for="usuario_id">Usuario</label>
+    <input type="number" name="usuario_id" value="{{ ticket.usuario_id }}" required>
+
+    <button type="submit">Actualizar</button>
+</form>
+
+{% endblock %}
