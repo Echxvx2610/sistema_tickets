@@ -1,0 +1,144 @@
+{% extends "base/layout.html" %}
+{% block title %}Gestión de Tickets{% endblock %}
+
+{% block content %}
+<!-- Estilos Locales -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container">
+    <!-- <h1 class="title">Gestión de Tickets</h1> -->
+    <h2>Gestión de Tickets - Administrador</h2>
+    <div class="table-container">
+        <table class="ticket-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.id }}</td>
+                    <td>{{ ticket.titulo }}</td>
+                    <td class="description">{{ ticket.descripcion }}</td>
+                    <td>
+                        <span class="status-badge status-{{ ticket.estado.lower().replace(' ', '-') }}">
+                            {{ ticket.estado }}
+                        </span>
+                    </td>
+                    <td>{{ ticket.username }}</td>
+                    <td class="actions">
+                        <button onclick="openUpdateModal({{ ticket.id }}, '{{ ticket.titulo }}', '{{ ticket.descripcion }}', '{{ ticket.estado }}', '{{ ticket.usuario_id }}')" class="btn btn-edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="confirmDelete({{ ticket.id }})" class="btn btn-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="no-tickets">No hay tickets disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para actualizar ticket -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle">Actualizar Ticket</h2>
+        <form id="updateForm" method="POST" action="">
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado" required>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Completado">Completado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="usuario_id">ID Usuario:</label>
+                <input type="number" id="usuario_id" name="usuario_id" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openUpdateModal(ticketId, titulo, descripcion, estado, usuarioId) {
+    const modal = document.getElementById('updateModal');
+    const form = document.getElementById('updateForm');
+    const modalTitle = document.getElementById('modalTitle');
+    
+    // Actualizar el título del modal
+    modalTitle.textContent = `Actualizar Ticket #${ticketId}`;
+    
+    // Establecer la acción del formulario
+    form.action = `/update_ticket/${ticketId}`;
+    
+    // Cargar los datos actuales del ticket en el formulario
+    document.getElementById('titulo').value = titulo;
+    document.getElementById('descripcion').value = descripcion;
+    document.getElementById('estado').value = estado;
+    document.getElementById('usuario_id').value = usuarioId;
+    
+    // Mostrar el modal con una animación suave
+    modal.style.display = "block";
+    setTimeout(() => {
+        modal.classList.add('show');
+    }, 10);
+}
+
+function closeModal() {
+    const modal = document.getElementById('updateModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 300);
+}
+
+function confirmDelete(ticketId) {
+    if (confirm('¿Estás seguro de que deseas eliminar este ticket?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/delete_ticket/${ticketId}`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Cerrar modal cuando se hace clic fuera de él
+window.onclick = function(event) {
+    const modal = document.getElementById('updateModal');
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+// Cerrar modal con la X
+document.querySelector('.close').onclick = closeModal;
+</script>
+
+{% endblock %}
