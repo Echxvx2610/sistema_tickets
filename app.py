@@ -57,16 +57,16 @@ def index():
     # Crear una lista de tickets con el nombre del usuario
     tickets_with_usernames = []
     for ticket in tickets:
-        user_id = ticket['usuario_id']  # Asumiendo que los tickets tienen un campo 'usuario_id'
+        user_id = ticket['usuario_id']  # extraer el ID del usuario
         # Obtener el nombre del usuario relacionado con este ticket
-        username = operaciones_BD.get_username_by_ticket(user_id)  # Llama a la función que obtiene el nombre
+        username = operaciones_BD.get_username_by_ticket(user_id)
         ticket['username'] = username  # Añadir el nombre del usuario al ticket
         tickets_with_usernames.append(ticket)
         
     if current_user.role == 'produccion':
         return render_template('view_produccion/index.html')  # Página para usuarios de producción
     elif current_user.role == 'soporte':
-        return render_template('view_soporte/index.html',tickets=tickets_with_usernames)  # Página para usuarios de soporte
+        return render_template('view_soporte/index.html',tickets=tickets_with_usernames)  # Página para usuarios de soporte con contexto
     elif current_user.role == 'administrador':
         return render_template('view_administrador/index.html')  # Página para administradores
 
@@ -78,7 +78,7 @@ def logout():
 
 
 @app.route('/usuarios')
-@login_required  # Solo se puede acceder si el usuario está autenticado
+@login_required  
 def usuarios():
     return render_template('usuarios.html')
 
@@ -119,7 +119,7 @@ def get_info_user(user_id):
 
 # Operaciones CRUD de usuarios ( produccion )
 @app.route('/append_user/<username>/<password>', methods=['GET', 'POST'])
-@login_required  # Solo se puede acceder si el usuario está autenticado
+@login_required  
 def append_user(username, password):
     if request.method == 'POST':
         operaciones_BD.register_user(username, password, 'user')
@@ -130,7 +130,7 @@ def append_user(username, password):
 
 #operaciones CRUD de tickets
 @app.route('/append_ticket/<titulo>/<descripcion>/<estado>/<usuario_id>', methods=['GET', 'POST'])
-@login_required  # Solo se puede acceder si el usuario está autenticado
+@login_required 
 def append_ticket(titulo, descripcion, estado, usuario_id):
     if request.method == 'POST':
         operaciones_BD.register_ticket(titulo, descripcion, estado, usuario_id)
@@ -141,7 +141,7 @@ def append_ticket(titulo, descripcion, estado, usuario_id):
     return redirect(url_for('index'))
 
 @app.route('/update_ticket/<int:ticket_id>', methods=['GET', 'POST'])
-@login_required  # Solo se puede acceder si el usuario está autenticado
+@login_required  
 def update_ticket(ticket_id):
     if request.method == 'POST':
         try:
@@ -174,7 +174,7 @@ def update_ticket(ticket_id):
         return render_template('update_ticket.html', ticket=ticket)
 
 @app.route('/delete_ticket/<int:ticket_id>', methods=['POST'])
-@login_required  # Solo se puede acceder si el usuario está autenticado
+@login_required  
 def delete_ticket(ticket_id):
     # Eliminar el ticket de la base de datos
     operaciones_BD.delete_ticket(ticket_id)
