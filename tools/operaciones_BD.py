@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import datetime
+
 
 # crear BD para sistema de tickets
 def create_database():
@@ -10,7 +12,7 @@ def create_database():
                 - username
                 - password
                 - role
-            Metodos:
+            Métodos:
                 - __init__(self, id, username, password, role)
                 - __str__(self)
                 - __repr__(self)
@@ -22,15 +24,23 @@ def create_database():
                 - titulo
                 - descripcion
                 - estado
-                - usuario_id
-            Metodos:
-                - __init__(self, id, titulo, descripcion, estado, usuario_id)
+                - usuario_id (usuario que creó el ticket)
+                - tecnico_id (usuario que está asignado para solucionar el ticket, puede ser null)
+                - tipo_servicio
+                - turno
+                - fecha
+                - area
+                - celda
+            Métodos:
+                - __init__(self, id, titulo, descripcion, estado, usuario_id, tecnico_id, tipo_servicio, turno, fecha, area, celda)
                 - __str__(self)
                 - __repr__(self)
                 - getter y setter de cada atributo
-        """
+    """
     conn = sqlite3.connect('tools/sistema_tickets.db')
     cursor = conn.cursor()
+
+    # Crear tabla de usuarios
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,16 +49,29 @@ def create_database():
             role TEXT NOT NULL
         )
     ''')
+
+    # Crear tabla de tickets con las columnas necesarias
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS tickets (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT NOT NULL,
             descripcion TEXT NOT NULL,
             estado TEXT NOT NULL,
-            usuario_id INTEGER NOT NULL,
-            FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+            usuario_id INTEGER NOT NULL,  -- Relación con el usuario que crea el ticket
+            tecnico_id INTEGER,  -- Relación con el técnico asignado
+            tipo_servicio TEXT,
+            turno TEXT,
+            fecha TEXT,  -- Guarda la fecha como texto en formato 'YYYY-MM-DD HH:MM'
+            area TEXT,
+            celda TEXT,
+            FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+            FOREIGN KEY (tecnico_id) REFERENCES usuarios(id)  -- Relación con el técnico
         )
     ''')
+
+    conn.commit()
+    conn.close()
+
 
 def get_list_users():
     conn = sqlite3.connect('tools/sistema_tickets.db')
@@ -176,3 +199,64 @@ def get_username_by_ticket(user_id):
         return None  # No se encontró el usuario
     
     conn.close()
+
+def insertar_registros_prueba():
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+
+    # Datos de prueba para insertar en la tabla tickets
+    tickets_prueba = [
+        ('Problema A', 'Descripción del problema A', 'Pendiente', 1, None, 'Servicio A', 'Turno A', '2025-02-27 10:00', 'Área 1', 'Celda 1'),
+        ('Problema B', 'Descripción del problema B', 'En Proceso', 2, 1, 'Servicio B', 'Turno B', '2025-02-27 11:00', 'Área 2', 'Celda 2'),
+        ('Problema C', 'Descripción del problema C', 'Completado', 1, 2, 'Servicio C', 'Turno C', '2025-02-27 12:00', 'Área 3', 'Celda 3'),
+        ('Problema D', 'Descripción del problema D', 'Pendiente', 3, None, 'Servicio D', 'Turno D', '2025-02-27 13:00', 'Área 4', 'Celda 4'),
+        ('Problema E', 'Descripción del problema E', 'En Proceso', 2, 3, 'Servicio E', 'Turno E', '2025-02-27 14:00', 'Área 5', 'Celda 5'),
+        ('Problema F', 'Descripción del problema F', 'Pendiente', 1, None, 'Servicio F', 'Turno F', '2025-02-27 15:00', 'Área 6', 'Celda 6'),
+        ('Problema G', 'Descripción del problema G', 'Completado', 3, 1, 'Servicio G', 'Turno G', '2025-02-27 16:00', 'Área 7', 'Celda 7'),
+        ('Problema H', 'Descripción del problema H', 'Pendiente', 2, None, 'Servicio H', 'Turno H', '2025-02-27 17:00', 'Área 8', 'Celda 8'),
+        ('Problema I', 'Descripción del problema I', 'En Proceso', 1, 2, 'Servicio I', 'Turno I', '2025-02-27 18:00', 'Área 9', 'Celda 9'),
+        ('Problema J', 'Descripción del problema J', 'Completado', 3, 1, 'Servicio J', 'Turno J', '2025-02-27 19:00', 'Área 10', 'Celda 10')
+    ]
+
+    # Insertar los registros de prueba en la tabla tickets
+    cursor.executemany('''
+        INSERT INTO tickets (titulo, descripcion, estado, usuario_id, tecnico_id, tipo_servicio, turno, fecha, area, celda)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', tickets_prueba)
+
+    conn.commit()
+    conn.close()
+    print("Registros de prueba insertados con éxito.")
+
+def insertar_usuarios_prueba():
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+
+    # Datos de prueba para insertar en la tabla usuarios
+    usuarios_prueba = [
+        ('usuario1', 'password1', 'admin'),
+        ('usuario2', 'password2', 'usuario'),
+        ('usuario3', 'password3', 'tecnico'),
+        ('usuario4', 'password4', 'usuario'),
+        ('usuario5', 'password5', 'admin'),
+        ('usuario6', 'password6', 'tecnico'),
+        ('usuario7', 'password7', 'usuario'),
+        ('usuario8', 'password8', 'usuario'),
+        ('usuario9', 'password9', 'tecnico'),
+        ('usuario10', 'password10', 'admin')
+    ]
+
+    # Insertar los registros de prueba en la tabla usuarios
+    cursor.executemany('''
+        INSERT INTO usuarios (username, password, role)
+        VALUES (?, ?, ?)
+    ''', usuarios_prueba)
+
+    conn.commit()
+    conn.close()
+    print("Usuarios de prueba insertados con éxito.")
+
+
+# create_database()
+# insertar_usuarios_prueba()
+# insertar_registros_prueba()

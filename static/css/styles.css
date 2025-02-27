@@ -2,150 +2,232 @@
 
 /* Variables de color */
 :root {
-  --primary-bg: #f8f9fa;
-  --navbar-shadow: rgba(0, 0, 0, 0.1);
-  --content-shadow: rgba(0, 0, 0, 0.05);
-  --border-color: #dee2e6;
-}
-
-/* Estilos generales */
-body {
-  background-color: var(--primary-bg);
-}
-
-/* Estilos del navbar */
-.navbar {
-  box-shadow: 0 2px 4px var(--navbar-shadow);
-  padding: 1rem 0;
-}
-
-.navbar-brand {
-  font-weight: 300;
-  font-size: 1.5rem;
-  color: cadetblue;
-  transition: color 0.3s ease;
-}
-
-.navbar-brand:hover {
-  color: cadetblue;
-}
-
-.nav-link {
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  color: #555;
-  transition: color 0.3s ease;
-}
-
-.nav-link:hover {
-  color: cadetblue;
-}
-
-.nav-link i {
-  margin-right: 5px;
-}
-
-/* Estilos del contenido principal */
-main {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px var(--content-shadow);
-  margin: 1rem 0;
-}
-
-main .container {
-  min-height: 70vh;
-}
-
-/* Estilos del footer */
-.footer {
-  background-color: var(--primary-bg);
-  border-top: 1px solid var(--border-color);
-}
-
-.footer p {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* Media queries para responsividad */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0.5rem 0;
+    --primary-bg: #f8f9fa;
+    --sidebar-bg: #343a40;
+    --sidebar-hover: #495057;
+    --sidebar-active: #007bff;
+    --sidebar-text: #fff;
+    --navbar-shadow: rgba(0, 0, 0, 0.1);
+    --content-shadow: rgba(0, 0, 0, 0.05);
+    --border-color: #dee2e6;
+    --transition-speed: 0.3s;
   }
-
-  .navbar-brand {
-    font-size: 1.2rem;
-  }
-
-  main .container {
-    padding: 1rem;
-  }
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-main .container {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Estilos para el estado activo de la navegación */
-.nav-link.active {
-  color: cadetblue;
-  border-bottom: 2px solid cadetblue;
-}
-
-/* Mejoras de accesibilidad */
-.nav-link:focus {
-  border-left: 5px solid cadetblue;
-}
-
-/* Estilos para el modo oscuro (si lo implementas después) */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-bg: #1a1a1a;
-    --navbar-shadow: rgba(0, 0, 0, 0.2);
-    --content-shadow: rgba(0, 0, 0, 0.1);
-    --border-color: #333;
-  }
-
+  
+  /* Estilos generales */
   body {
-    color: #fff;
+    background-color: var(--primary-bg);
+    overflow-x: hidden;
   }
-
-  .navbar {
-    background-color: #222 !important;
+  
+  .wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
   }
-
-  .navbar-brand,
-  .nav-link {
-    color: #fff !important;
+  
+  /* Estilos del sidebar */
+  .sidebar {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    transition: all var(--transition-speed);
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
   }
-
-  .nav-link:hover {
-    color: #007bff !important;
+  
+  .sidebar.active {
+    margin-left: -250px;
   }
-
+  
+  .sidebar .sidebar-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .sidebar .sidebar-header h3 {
+    margin: 0;
+    color: var(--sidebar-text);
+    font-size: 1.5rem;
+  }
+  
+  .sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .sidebar ul li {
+    padding: 0;
+    position: relative;
+  }
+  
+  .sidebar ul li a {
+    padding: 15px 20px;
+    display: block;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    transition: all var(--transition-speed);
+    border-left: 3px solid transparent;
+  }
+  
+  .sidebar ul li a:hover {
+    background: var(--sidebar-hover);
+    border-left-color: var(--sidebar-active);
+  }
+  
+  .sidebar ul li a.active {
+    background: var(--sidebar-hover);
+    border-left-color: var(--sidebar-active);
+  }
+  
+  .sidebar ul li a i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+  }
+  
+  #sidebarCollapseBtn {
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text);
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  /* Estilos del contenido */
+  .content {
+    width: calc(100% - 250px);
+    min-height: 100vh;
+    transition: all var(--transition-speed);
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .content.active {
+    width: 100%;
+  }
+  
+  .content-header {
+    padding: 15px 20px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+  }
+  
+  .content-header h2 {
+    margin: 0 0 0 15px;
+    font-size: 1.5rem;
+  }
+  
+  #sidebarCollapse {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    color: cadetblue;
+  }
+  
   main {
-    background-color: #222;
+    flex: 1;
+    background-color: #fff;
+    margin: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--content-shadow);
   }
-
+  
+  /* Estilos del footer */
   .footer {
-    background-color: #222 !important;
+    background-color: var(--sidebar-bg) !important;
+    color: var(--sidebar-text);
+    margin-top: auto;
   }
-
+  
   .footer p {
-    color: #fff;
+    color: var(--sidebar-text);
+    font-size: 0.9rem;
   }
-}
-
+  
+  /* Media queries para responsividad */
+  @media (max-width: 768px) {
+    .sidebar {
+      margin-left: -250px;
+    }
+    
+    .sidebar.active {
+      margin-left: 0;
+    }
+    
+    .content {
+      width: 100%;
+    }
+    
+    .content.active {
+      width: calc(100% - 250px);
+    }
+    
+    main .container-fluid {
+      padding: 1rem;
+    }
+  }
+  
+  /* Animaciones */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  main .container-fluid {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Mejoras de accesibilidad */
+  .sidebar ul li a:focus {
+    outline: none;
+    background: var(--sidebar-hover);
+    border-left-color: var(--sidebar-active);
+  }
+  
+  /* Estilos para el modo oscuro */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --primary-bg: #1a1a1a;
+      --sidebar-bg: #121212;
+      --sidebar-hover: #2c2c2c;
+      --content-shadow: rgba(0, 0, 0, 0.1);
+      --border-color: #333;
+    }
+  
+    body {
+      color: #fff;
+    }
+  
+    .content-header {
+      background-color: #222;
+      color: #fff;
+    }
+  
+    #sidebarCollapse {
+      color: #fff;
+    }
+  
+    main {
+      background-color: #222;
+    }
+  }

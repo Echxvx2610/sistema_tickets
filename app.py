@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from tools import operaciones_BD
+import sqlite3
+from datetime import datetime
+
 
 app = Flask(__name__)
 
@@ -12,24 +15,32 @@ login_manager.login_view = 'login'  # Redirige a login si el usuario no está au
 
 # Datos de usuario Dummy con roles
 USER_CREDENTIALS = {
-    'admin': {'password': 'admin123', 'role': 'administrador'},
-    'soporte1': {'password': 'soporte123', 'role': 'soporte'},
-    'produccion1': {'password': 'produccion123', 'role': 'produccion'}
+    'admin': {'password': 'admin123', 'role': 'administrador', 'nombre': 'Administrador'},
+    'soporte1': {'password': 'soporte123', 'role': 'soporte', 'nombre': 'Soporte 1'},
+    'produccion1': {'password': 'produccion123', 'role': 'produccion', 'nombre': 'Producción 1'}
 }
+
 
 # Definir la clase User (usuario)
 class User(UserMixin):
-    def __init__(self, username, role):
+    def __init__(self, username, role, nombre=None):
         self.id = username
         self.role = role
+        self.nombre = nombre or username  # Si no tienes un nombre, usa el username por defecto
+
+    def get_id(self):
+        return self.id
+
 
 # Función para cargar un usuario
 @login_manager.user_loader
 def load_user(username):
     if username in USER_CREDENTIALS:
         role = USER_CREDENTIALS[username]['role']
-        return User(username, role)
+        nombre = USER_CREDENTIALS[username]['nombre']
+        return User(username, role, nombre)
     return None
+
 
 # Ruta para el login
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,22 +64,53 @@ def login():
 @app.route('/index')
 @login_required
 def index():
-    tickets = operaciones_BD.get_list_tickets()
-    # Crear una lista de tickets con el nombre del usuario
-    tickets_with_usernames = []
-    for ticket in tickets:
-        user_id = ticket['usuario_id']  # extraer el ID del usuario
-        # Obtener el nombre del usuario relacionado con este ticket
-        username = operaciones_BD.get_username_by_ticket(user_id)
-        ticket['username'] = username  # Añadir el nombre del usuario al ticket
-        tickets_with_usernames.append(ticket)
-        
-    if current_user.role == 'produccion':
-        return render_template('view_produccion/index.html')  # Página para usuarios de producción
-    elif current_user.role == 'soporte':
-        return render_template('view_soporte/index.html',tickets=tickets_with_usernames)  # Página para usuarios de soporte con contexto
-    elif current_user.role == 'administrador':
-        return render_template('view_administrador/index.html')  # Página para administradores
+    # Obtener los tickets desde la base de datos
+    conn = sqlite3.connect('tools/sistema_tickets.db')
+    cursor = conn.cursor()
+
+    cursor.execute(''' 
+        SELECT t.id, t.titulo, t.descripcion, t.estado, t.turno, t.fecha, t.area, t.celda,
+               t.usuario_id, t.tecnico_id, t.tipo_servicio
+        FROM tickets t
+    ''')
+
+    # Obtener los resultados y convertir cada fila en un diccionario
+    tickets = []
+    for row in cursor.fetchall():
+        fecha = datetime.strptime(row[5], '%Y-%m-%d %H:%M') if row[5] else None
+        user_id = row[8]  # El ID del usuario
+        username = operaciones_BD.get_username_by_ticket(user_id)  # Obtener el nombre del usuario
+
+        ticket = {
+            'id': row[0],
+            'titulo': row[1],
+            'descripcion': row[2],
+            'estado': row[3],
+            'turno': row[4],
+            'fecha': fecha,  # Aquí la fecha ya es un objeto datetime
+            'area': row[6],
+            'celda': row[7],
+            'username': username,  # Añadir el nombre del usuario
+            'tecnico_id': row[9],
+            'tipo_servicio': row[10]
+        }
+        tickets.append(ticket)
+
+    conn.close()
+
+    # Aquí chequeamos el rol del usuario autenticado
+    user_role = current_user.role
+
+    # Si el rol es "administrador" o "soporte", redirigir a su propia vista
+    if user_role == 'administrador':
+        return render_template('view_administrador/index.html', tickets=tickets)
+    elif user_role == 'soporte':
+        return render_template('view_soporte/index.html', tickets=tickets)
+    elif user_role == 'produccion':
+        return render_template('view_produccion/index.html', tickets=tickets)
+
+    # Si no coincide con ningún rol específico, redirigir a una página por defecto
+    return render_template('index.html', tickets=tickets)
 
 # Ruta para cerrar sesión
 @app.route('/logout')
