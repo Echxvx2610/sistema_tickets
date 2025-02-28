@@ -1,0 +1,15 @@
+{% extends "base/layout.html" %}
+
+{% block title %}Eliminar Ticket{% endblock %}
+
+{% block header %}Eliminar Ticket: {{ ticket.titulo }}{% endblock %}
+
+{% block content %}
+    <h3>¿Está seguro de que desea eliminar este ticket?</h3>
+    <p><strong>Título:</strong> {{ ticket.titulo }}</p>
+    <p><strong>Descripción:</strong> {{ ticket.descripcion }}</p>
+    <form action="{{ url_for('delete_ticket', ticket_id=ticket.id) }}" method="POST">
+        <button type="submit" class="btn btn-danger">Eliminar Ticket</button>
+        <a href="{{ url_for('tickets') }}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}

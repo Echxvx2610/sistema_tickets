@@ -1,0 +1,56 @@
+{% extends "base/layout.html" %}
+
+{% block title %}Agregar Ticket{% endblock %}
+
+{% block header %}Agregar un Nuevo Ticket{% endblock %}
+
+{% block content %}
+    <h3>Agregar un Nuevo Ticket</h3>
+    <form action="{{ url_for('append_ticket') }}" method="POST">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" required>
+        </div>
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-select" id="estado" name="estado" required>
+                <option value="Nuevo">Nuevo</option>
+                <option value="En Proceso">En Proceso</option>
+                <option value="Cerrado">Cerrado</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="usuario_id" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control" id="usuario_id" name="usuario_id" required>
+        </div>
+        <div class="mb-3">
+            <label for="tecnico_id" class="form-label">ID Técnico (opcional)</label>
+            <input type="number" class="form-control" id="tecnico_id" name="tecnico_id">
+        </div>
+        <div class="mb-3">
+            <label for="tipo_servicio" class="form-label">Tipo de Servicio (opcional)</label>
+            <input type="text" class="form-control" id="tipo_servicio" name="tipo_servicio">
+        </div>
+        <div class="mb-3">
+            <label for="turno" class="form-label">Turno (opcional)</label>
+            <input type="text" class="form-control" id="turno" name="turno">
+        </div>
+        <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha (opcional)</label>
+            <input type="text" class="form-control" id="fecha" name="fecha" placeholder="YYYY-MM-DD HH:MM">
+        </div>
+        <div class="mb-3">
+            <label for="area" class="form-label">Área (opcional)</label>
+            <input type="text" class="form-control" id="area" name="area">
+        </div>
+        <div class="mb-3">
+            <label for="celda" class="form-label">Celda (opcional)</label>
+            <input type="text" class="form-control" id="celda" name="celda">
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Ticket</button>
+    </form>
+{% endblock %}

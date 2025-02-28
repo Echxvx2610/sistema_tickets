@@ -2,26 +2,55 @@
 
 {% block title %}Actualizar Ticket{% endblock %}
 
+{% block header %}Actualizar Ticket: {{ ticket['titulo'] }}{% endblock %}
+
 {% block content %}
-<h2>Actualizar Ticket</h2>
-<!-- Formulario de actualización -->
-<form method="POST">
-    <label for="titulo">Título</label>
-    <input type="text" name="titulo" value="{{ ticket.titulo }}" required>
-    
-    <label for="descripcion">Descripción</label>
-    <textarea name="descripcion" required>{{ ticket.descripcion }}</textarea>
-    
-    <label for="estado">Estado</label>
-    <select name="estado" required>
-        <option value="abierto" {% if ticket.estado == 'abierto' %}selected{% endif %}>Abierto</option>
-        <option value="cerrado" {% if ticket.estado == 'cerrado' %}selected{% endif %}>Cerrado</option>
-    </select>
-    
-    <label for="usuario_id">Usuario</label>
-    <input type="number" name="usuario_id" value="{{ ticket.usuario_id }}" required>
-
-    <button type="submit">Actualizar</button>
-</form>
-
+    <h3>Actualizar Ticket</h3>
+    <form action="{{ url_for('update_ticket', ticket_id=ticket['id']) }}" method="POST">
+        <div class="mb-3">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" class="form-control" id="titulo" name="titulo" value="{{ ticket['titulo'] }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" required>{{ ticket['descripcion'] }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-select" id="estado" name="estado" required>
+                <option value="Nuevo" {% if ticket['estado'] == 'Nuevo' %}selected{% endif %}>Nuevo</option>
+                <option value="En Proceso" {% if ticket['estado'] == 'En Proceso' %}selected{% endif %}>En Proceso</option>
+                <option value="Cerrado" {% if ticket['estado'] == 'Cerrado' %}selected{% endif %}>Cerrado</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="usuario_id" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control" id="usuario_id" name="usuario_id" value="{{ ticket['usuario_id'] }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="tecnico_id" class="form-label">ID Técnico (opcional)</label>
+            <input type="number" class="form-control" id="tecnico_id" name="tecnico_id" value="{{ ticket['tecnico_id'] }}">
+        </div>
+        <div class="mb-3">
+            <label for="tipo_servicio" class="form-label">Tipo de Servicio (opcional)</label>
+            <input type="text" class="form-control" id="tipo_servicio" name="tipo_servicio" value="{{ ticket['tipo_servicio'] }}">
+        </div>
+        <div class="mb-3">
+            <label for="turno" class="form-label">Turno (opcional)</label>
+            <input type="text" class="form-control" id="turno" name="turno" value="{{ ticket['turno'] }}">
+        </div>
+        <div class="mb-3">
+            <label for="fecha" class="form-label">Fecha (opcional)</label>
+            <input type="text" class="form-control" id="fecha" name="fecha" value="{{ ticket['fecha'] }}" placeholder="YYYY-MM-DD HH:MM">
+        </div>
+        <div class="mb-3">
+            <label for="area" class="form-label">Área (opcional)</label>
+            <input type="text" class="form-control" id="area" name="area" value="{{ ticket['area'] }}">
+        </div>
+        <div class="mb-3">
+            <label for="celda" class="form-label">Celda (opcional)</label>
+            <input type="text" class="form-control" id="celda" name="celda" value="{{ ticket['celda'] }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar Ticket</button>
+    </form>
 {% endblock %}

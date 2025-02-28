@@ -69,7 +69,7 @@
                     <th>Turno</th>
                     <th>Fecha</th>
                     <th>Área</th>
-                    <th>Celda</th>
+                    <th>Ubicación</th>
                     <th>Problema</th>
                     <th>Usuario</th>
                     <th>Técnico</th>
@@ -82,14 +82,13 @@
                 {% for ticket in tickets %}
                 <tr>
                     <td>{{ ticket.id }}</td>
-                    <td>{{ ticket.turno }}</td>
-                    <td>{{ ticket.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
-                    <!-- Asegúrate de que la fecha sea un objeto datetime o usar un formato adecuado -->
+                    <td>{{ ticket.turno if 'turno' in ticket else 'N/A' }}</td>
+                    <td>{{ ticket.fecha_creacion.strftime('%d/%m/%Y %H:%M') if ticket.fecha_creacion else 'N/A' }}</td>
                     <td>{{ ticket.area }}</td>
-                    <td>{{ ticket.celda }}</td>
+                    <td>{{ ticket.ubicacion }}</td>
                     <td>{{ ticket.titulo }}</td>
-                    <td>{{ ticket.username }}</td>
-                    <td>{{ ticket.tecnico_id or 'Sin asignar' }}</td>
+                    <td>{{ ticket.creador_nombre }}</td>
+                    <td>{{ ticket.soporte_nombre if ticket.soporte_nombre else 'Sin asignar' }}</td>
                     <td>{{ ticket.tipo_servicio }}</td>
                     <td>
                         <span class="status-badge status-{{ ticket.estado.lower().replace(' ', '-') }}">
@@ -99,11 +98,11 @@
                     <td class="actions">
                         <div class="btn-group">
                             <button
-                                onclick="openUpdateModal({{ ticket.id }}, '{{ ticket.titulo }}', '{{ ticket.descripcion }}', '{{ ticket.estado }}', '{{ ticket.username }}')"
+                                onclick="openUpdateModal('{{ ticket.id }}', '{{ ticket.titulo }}', '{{ ticket.descripcion }}', '{{ ticket.estado }}', '{{ ticket.creador_nombre }}')"
                                 class="btn btn-sm btn-outline-primary" title="Editar ticket">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
-                            <button onclick="confirmDelete({{ ticket.id }})" class="btn btn-sm btn-outline-danger"
+                            <button onclick="confirmDelete('{{ ticket.id }}')" class="btn btn-sm btn-outline-danger"
                                 title="Eliminar ticket">
                                 <i class="bi bi-trash3"></i>
                             </button>
@@ -120,7 +119,7 @@
     </div>
 </div>
 
-<!-- Modal para actualizar ticket  -->
+<!-- Modal para actualizar ticket -->
 <div id="updateModal" class="modal fade" tabindex="-1">
     <div class="modal-content">
         <span class="close">&times;</span>
@@ -142,10 +141,6 @@
                     <option value="Completado">Completado</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="usuario_id">ID Usuario:</label>
-                <input type="number" id="usuario_id" name="usuario_id" required>
-            </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
@@ -153,6 +148,12 @@
         </form>
     </div>
 </div>
+
+<!-- Agregar esto temporalmente después del div dashboard-container -->
+<div style="background: #f5f5f5; padding: 10px; margin: 10px; border-radius: 5px;">
+    <pre>{{ tickets|tojson(indent=2)|safe }}</pre>
+</div>
+
 <script>
     function openUpdateModal(ticketId, titulo, descripcion, estado, usuarioId) {
         const modal = document.getElementById('updateModal');

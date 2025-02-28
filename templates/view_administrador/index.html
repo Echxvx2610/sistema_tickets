@@ -53,7 +53,7 @@
                 <option value="50">50</option>
                 <option value="100">100</option>
             </select>
-            registros
+            Filtrar
         </div>
         <div class="search-control">
             <input type="search" class="form-control" placeholder="Filtrar...">
@@ -69,7 +69,7 @@
                     <th>Turno</th>
                     <th>Fecha</th>
                     <th>Área</th>
-                    <th>Celda</th>
+                    <th>Ubicación</th>
                     <th>Problema</th>
                     <th>Usuario</th>
                     <th>Técnico</th>
@@ -82,14 +82,13 @@
                 {% for ticket in tickets %}
                 <tr>
                     <td>{{ ticket.id }}</td>
-                    <td>{{ ticket.turno }}</td>
-                    <td>{{ ticket.fecha.strftime('%d/%m/%Y %H:%M') }}</td>
-                    <!-- Asegúrate de que la fecha sea un objeto datetime o usar un formato adecuado -->
+                    <td>{{ ticket.turno if 'turno' in ticket else 'N/A' }}</td>
+                    <td>{{ ticket.fecha_creacion.strftime('%d/%m/%Y %H:%M') if ticket.fecha_creacion else 'N/A' }}</td>
                     <td>{{ ticket.area }}</td>
-                    <td>{{ ticket.celda }}</td>
+                    <td>{{ ticket.ubicacion }}</td>
                     <td>{{ ticket.titulo }}</td>
-                    <td>{{ ticket.username }}</td>
-                    <td>{{ ticket.tecnico_id or 'Sin asignar' }}</td>
+                    <td>{{ ticket.creador_nombre }}</td>
+                    <td>{{ ticket.soporte_nombre if ticket.soporte_nombre else 'Sin asignar' }}</td>
                     <td>{{ ticket.tipo_servicio }}</td>
                     <td>
                         <span class="status-badge status-{{ ticket.estado.lower().replace(' ', '-') }}">
@@ -99,11 +98,11 @@
                     <td class="actions">
                         <div class="btn-group">
                             <button
-                                onclick="openUpdateModal({{ ticket.id }}, '{{ ticket.titulo }}', '{{ ticket.descripcion }}', '{{ ticket.estado }}', '{{ ticket.username }}')"
+                                onclick="openUpdateModal('{{ ticket.id }}', '{{ ticket.titulo }}', '{{ ticket.descripcion }}', '{{ ticket.estado }}', '{{ ticket.creador_nombre }}')"
                                 class="btn btn-sm btn-outline-primary" title="Editar ticket">
                                 <i class="bi bi-pencil-square"></i>
                             </button>
-                            <button onclick="confirmDelete({{ ticket.id }})" class="btn btn-sm btn-outline-danger"
+                            <button onclick="confirmDelete('{{ ticket.id }}')" class="btn btn-sm btn-outline-danger"
                                 title="Eliminar ticket">
                                 <i class="bi bi-trash3"></i>
                             </button>
@@ -130,14 +129,17 @@
             </div>
             <div class="modal-body">
                 <form id="updateForm" method="POST" action="">
+                    <!-- Título: solo lectura -->
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Título:</label>
-                        <input type="text" class="form-control" id="titulo" name="titulo" required>
+                        <input type="text" class="form-control" id="titulo" name="titulo" required readonly>
                     </div>
+                    <!-- Descripción: solo lectura -->
                     <div class="mb-3">
                         <label for="descripcion" class="form-label">Descripción:</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" required></textarea>
+                        <textarea class="form-control" id="descripcion" name="descripcion" required readonly></textarea>
                     </div>
+                    <!-- Estado: editable -->
                     <div class="mb-3">
                         <label for="estado" class="form-label">Estado:</label>
                         <select class="form-select" id="estado" name="estado" required>
@@ -146,10 +148,19 @@
                             <option value="Completado">Completado</option>
                         </select>
                     </div>
+                    <!-- ID Usuario: solo lectura -->
                     <div class="mb-3">
-                        <label for="usuario_id" class="form-label">ID Usuario:</label>
-                        <input type="number" class="form-control" id="usuario_id" name="usuario_id" required>
+                        <label for="usuario_id" class="form-label">Usuario:</label>
+                        <input type="text" class="form-control" id="usuario_id" name="usuario_id" required readonly>
                     </div>
+                    <!-- Técnico: editable -->
+                    <div class="mb-3">
+                        <label for="tecnico_nombre" class="form-label">Técnico:</label>
+                        <input type="text" class="form-control" id="tecnico_id" name="tecnico_id"
+                            value="{{ ticket.tecnico_nombre if ticket.tecnico_nombre else '' }}">
+
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -160,9 +171,10 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    function openUpdateModal(ticketId, titulo, descripcion, estado, usuarioId) {
+    function openUpdateModal(ticketId, titulo, descripcion, estado, usuarioNombre, tecnicoNombre) {
         // Establecer la acción del formulario
         document.getElementById('updateForm').action = `/update_ticket/${ticketId}`;
 
@@ -170,48 +182,15 @@
         document.getElementById('modalTitle').textContent = `Actualizar Ticket #${ticketId}`;
 
         // Cargar los datos actuales del ticket en el formulario
-        document.getElementById('titulo').value = titulo;
-        document.getElementById('descripcion').value = descripcion;
-        document.getElementById('estado').value = estado;
-        document.getElementById('usuario_id').value = usuarioId;
+        document.getElementById('titulo').value = titulo;   // solo lectura
+        document.getElementById('descripcion').value = descripcion;   // solo lectura
+        document.getElementById('estado').value = estado;  // editable
+        document.getElementById('usuario_id').value = usuarioNombre;  // solo lectura
+        document.getElementById('tecnico_id').value = tecnicoNombre;  // editable
 
         // Mostrar el modal usando Bootstrap
         const myModal = new bootstrap.Modal(document.getElementById('updateModal'));
         myModal.show();
     }
-
-    // No necesitas las funciones closeModal, ya que Bootstrap maneja eso automáticamente
-
-    // Cerrar modal cuando se hace clic fuera de él
-    window.onclick = function (event) {
-        const modal = document.getElementById('updateModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    // Cerrar modal con la X
-    document.querySelector('.close').onclick = closeModal;
-
-    function confirmDelete(ticketId) {
-        if (confirm('¿Estás seguro de que deseas eliminar este ticket?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/delete_ticket/${ticketId}`;
-            document.body.appendChild(form);
-            form.submit();
-        }
-    }
-
-    // Cerrar modal cuando se hace clic fuera de él
-    window.onclick = function (event) {
-        const modal = document.getElementById('updateModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-
-    // Cerrar modal con la X
-    document.querySelector('.close').onclick = closeModal;
 </script>
 {% endblock %}
